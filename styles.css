@@ -1,0 +1,659 @@
+:root {
+  --bg: #06111f;
+  --bg-soft: #0a1729;
+  --panel: rgba(13, 29, 50, 0.92);
+  --panel-strong: rgba(15, 38, 65, 0.98);
+  --border: rgba(130, 180, 255, 0.18);
+  --border-strong: rgba(130, 180, 255, 0.34);
+  --text: #eef7ff;
+  --muted: #9fb4c9;
+  --accent: #35c7ff;
+  --accent-2: #7af0c4;
+  --danger: #ff5b6e;
+  --warning: #ffcf66;
+  --success: #66e08f;
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(53, 199, 255, 0.24), transparent 28rem),
+    radial-gradient(circle at top right, rgba(122, 240, 196, 0.12), transparent 26rem),
+    linear-gradient(145deg, #030913, var(--bg) 44%, #020710);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 70%);
+}
+
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-shell {
+  width: min(1880px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 18px 0 36px;
+}
+
+.mission-header {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(14, 35, 61, 0.94), rgba(5, 14, 26, 0.86));
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.subtitle {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.mission-clock {
+  min-width: 210px;
+  display: grid;
+  place-items: center;
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(4, 12, 23, 0.65);
+  text-align: center;
+}
+
+.mission-clock span,
+.mission-clock small {
+  color: var(--muted);
+}
+
+.mission-clock strong {
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
+.top-bar {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(5, 13, 25, 0.88);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 14px 45px rgba(0, 0, 0, 0.28);
+}
+
+.control-group,
+.status-strip,
+.video-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn,
+.cmd-btn {
+  min-height: 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 0 15px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.btn:hover,
+.cmd-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(53, 199, 255, 0.9);
+  background: rgba(53, 199, 255, 0.12);
+}
+
+.btn-primary {
+  border-color: rgba(53, 199, 255, 0.9);
+  background: linear-gradient(135deg, rgba(53, 199, 255, 0.28), rgba(53, 199, 255, 0.08));
+}
+
+.btn-success {
+  border-color: rgba(102, 224, 143, 0.86);
+  background: linear-gradient(135deg, rgba(102, 224, 143, 0.25), rgba(102, 224, 143, 0.07));
+}
+
+.btn-danger,
+.cmd-btn.danger {
+  border-color: rgba(255, 91, 110, 0.82);
+  background: linear-gradient(135deg, rgba(255, 91, 110, 0.26), rgba(255, 91, 110, 0.08));
+}
+
+.btn-warning {
+  border-color: rgba(255, 207, 102, 0.82);
+  background: linear-gradient(135deg, rgba(255, 207, 102, 0.2), rgba(255, 207, 102, 0.06));
+}
+
+.status-pill,
+.small-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.055);
+  font-size: 0.86rem;
+}
+
+.status-pill i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  box-shadow: 0 0 0 4px rgba(159, 180, 201, 0.08);
+}
+
+.status-pill.ok i {
+  background: var(--success);
+  box-shadow: 0 0 0 4px rgba(102, 224, 143, 0.12);
+}
+
+.status-pill.warn i {
+  background: var(--warning);
+  box-shadow: 0 0 0 4px rgba(255, 207, 102, 0.12);
+}
+
+.status-pill.danger i {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(255, 91, 110, 0.12);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.panel {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.panel h2 {
+  margin-bottom: 4px;
+  font-size: 1.06rem;
+  letter-spacing: -0.02em;
+}
+
+.panel p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.hero-panel {
+  grid-column: span 8;
+}
+
+.command-panel {
+  grid-column: span 4;
+}
+
+.container-telemetry,
+.payload-telemetry {
+  grid-column: span 3;
+}
+
+.graphs-panel {
+  grid-column: span 6;
+  grid-row: span 2;
+}
+
+.map-panel {
+  grid-column: span 6;
+}
+
+.orientation-panel,
+.video-panel,
+.log-panel {
+  grid-column: span 4;
+}
+
+.error-code {
+  min-width: 104px;
+  padding: 10px 14px;
+  border: 1px solid rgba(102, 224, 143, 0.48);
+  border-radius: var(--radius-md);
+  color: var(--success);
+  background: rgba(102, 224, 143, 0.08);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 1.7rem;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+
+.error-code.fault {
+  color: var(--danger);
+  border-color: rgba(255, 91, 110, 0.7);
+  background: rgba(255, 91, 110, 0.12);
+  animation: pulseFault 1s infinite;
+}
+
+@keyframes pulseFault {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 91, 110, 0); }
+  50% { box-shadow: 0 0 28px rgba(255, 91, 110, 0.28); }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kpi-card {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+}
+
+.kpi-card span,
+.kpi-card small {
+  display: block;
+  color: var(--muted);
+}
+
+.kpi-card strong {
+  display: block;
+  margin: 7px 0 5px;
+  font-size: clamp(1.28rem, 2.2vw, 2.1rem);
+  letter-spacing: -0.045em;
+}
+
+.fault-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.fault-item {
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid rgba(102, 224, 143, 0.32);
+  border-radius: var(--radius-md);
+  background: rgba(102, 224, 143, 0.08);
+}
+
+.fault-item b {
+  font-size: 0.91rem;
+}
+
+.fault-item span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.fault-item.fault {
+  border-color: rgba(255, 91, 110, 0.6);
+  background: rgba(255, 91, 110, 0.12);
+}
+
+.mission-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.cmd-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.command-status,
+.manual-input {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.command-status h3 {
+  margin-bottom: 6px;
+  font-size: 0.94rem;
+}
+
+.command-status p {
+  margin-bottom: 0;
+}
+
+.manual-input label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+
+textarea,
+select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  background: rgba(3, 9, 19, 0.72);
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  margin-bottom: 10px;
+  padding: 10px;
+  line-height: 1.4;
+}
+
+select {
+  min-height: 40px;
+  max-width: 260px;
+  padding: 0 10px;
+}
+
+.telemetry-table {
+  display: grid;
+  gap: 9px;
+}
+
+.telemetry-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 11px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.telemetry-row span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.telemetry-row strong {
+  font-size: 0.92rem;
+  text-align: right;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chart-card {
+  min-height: 210px;
+  padding: 10px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.chart-card.wide {
+  grid-column: span 2;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 190px !important;
+}
+
+.map {
+  width: 100%;
+  min-height: 405px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #0b1422;
+}
+
+.leaflet-container {
+  background: #0b1422;
+}
+
+.orientation-wrap {
+  display: grid;
+  gap: 12px;
+}
+
+.orientation-scene {
+  min-height: 270px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-md);
+  background: radial-gradient(circle at center, rgba(53, 199, 255, 0.08), rgba(0, 0, 0, 0.18));
+}
+
+.attitude-readout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.attitude-readout div {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.035);
+  text-align: center;
+}
+
+.attitude-readout span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.attitude-readout strong {
+  font-size: 1.08rem;
+}
+
+video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: 12px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-md);
+  background: #000;
+  object-fit: cover;
+}
+
+.stream-status {
+  margin: 10px 0 0;
+}
+
+.log-window {
+  height: 310px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid rgba(130, 180, 255, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.22);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.log-entry {
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.log-entry b {
+  color: var(--accent);
+}
+
+.log-entry.warn b {
+  color: var(--warning);
+}
+
+.log-entry.error b {
+  color: var(--danger);
+}
+
+@media (max-width: 1280px) {
+  .hero-panel,
+  .command-panel,
+  .container-telemetry,
+  .payload-telemetry,
+  .graphs-panel,
+  .map-panel,
+  .orientation-panel,
+  .video-panel,
+  .log-panel {
+    grid-column: span 6;
+  }
+
+  .kpi-grid,
+  .fault-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .app-shell {
+    width: min(100% - 18px, 1880px);
+  }
+
+  .mission-header,
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mission-clock {
+    min-width: 100%;
+  }
+
+  .hero-panel,
+  .command-panel,
+  .container-telemetry,
+  .payload-telemetry,
+  .graphs-panel,
+  .map-panel,
+  .orientation-panel,
+  .video-panel,
+  .log-panel {
+    grid-column: 1 / -1;
+  }
+
+  .kpi-grid,
+  .fault-grid,
+  .chart-grid,
+  .attitude-readout {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card.wide {
+    grid-column: span 1;
+  }
+
+  .control-group,
+  .status-strip,
+  .video-controls {
+    width: 100%;
+  }
+
+  .btn,
+  .cmd-btn,
+  select {
+    width: 100%;
+    max-width: none;
+  }
+}

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Single-page CanSat Ground Control Software dashboard with telemetry, graphs, GPS tracking, orientation and video stream." />
+  <title>CanSat Ground Control Software</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQkLynhMPwQVDtmIAsDYESew2tnNQy4=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="mission-header">
+      <div>
+        <p class="eyebrow">INDIA SPACE LAB • CAN/CubeSat Mission</p>
+        <h1>CanSat Ground Control Software</h1>
+        <p class="subtitle">Real-Time Telemetry Monitoring & Mission Operations Dashboard</p>
+      </div>
+      <div class="mission-clock" aria-live="polite">
+        <span>PC Time</span>
+        <strong id="pcTime">--:--:--</strong>
+        <small id="missionDate">----</small>
+      </div>
+    </header>
+
+    <section class="top-bar" aria-label="Top mission control bar">
+      <div class="control-group">
+        <button id="connectSerialBtn" class="btn btn-primary" type="button">Connect Serial</button>
+        <button id="startBtn" class="btn btn-success" type="button">Start Telemetry</button>
+        <button id="stopBtn" class="btn btn-danger" type="button" disabled>Stop Telemetry</button>
+      </div>
+      <div class="control-group">
+        <button id="exportCsvBtn" class="btn" type="button">Export CSV</button>
+        <button id="exportGraphBtn" class="btn" type="button">Export Graph</button>
+        <button id="syncTimeBtn" class="btn" type="button">Sync PC Time</button>
+        <button id="resetPacketBtn" class="btn btn-warning" type="button">Reset Packet</button>
+      </div>
+      <div class="status-strip">
+        <span class="status-pill" id="telemetryStatus"><i></i> Idle</span>
+        <span class="status-pill" id="serialStatus"><i></i> Serial: Not connected</span>
+        <span class="status-pill" id="videoStatusTop"><i></i> Video: Off</span>
+      </div>
+    </section>
+
+    <main class="dashboard-grid">
+      <section class="panel hero-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Mission Health</h2>
+            <p>Live status, fault code, and packet summary</p>
+          </div>
+          <div class="error-code" id="errorCode" title="4-digit mission error code">0000</div>
+        </div>
+
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <span>Packet</span>
+            <strong id="packetNumber">0</strong>
+            <small>Current telemetry packet</small>
+          </article>
+          <article class="kpi-card">
+            <span>Mission Time</span>
+            <strong id="missionTime">00:00</strong>
+            <small>Synced with telemetry</small>
+          </article>
+          <article class="kpi-card">
+            <span>Mode</span>
+            <strong id="missionMode">STANDBY</strong>
+            <small>Operational state</small>
+          </article>
+          <article class="kpi-card">
+            <span>Battery</span>
+            <strong id="batteryVoltage">-- V</strong>
+            <small id="batteryRemark">Waiting for data</small>
+          </article>
+        </div>
+
+        <div class="fault-grid" id="faultGrid">
+          <div class="fault-item" data-fault="descent"><b>Descent Rate</b><span>Safe: 8–10 m/s</span></div>
+          <div class="fault-item" data-fault="gps"><b>GPS Availability</b><span>Needs valid coordinates</span></div>
+          <div class="fault-item" data-fault="separation"><b>Payload Separation</b><span>Confirm after command</span></div>
+          <div class="fault-item" data-fault="parachute"><b>Emergency Parachute</b><span>Inactive is normal</span></div>
+        </div>
+      </section>
+
+      <section class="panel command-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Mission Control Panel</h2>
+            <p>Critical command operations</p>
+          </div>
+        </div>
+        <div class="mission-controls">
+          <button id="manualSepBtn" class="cmd-btn" type="button">Manual Separation</button>
+          <button id="parachuteBtn" class="cmd-btn danger" type="button">Emergency Parachute</button>
+          <button id="redundantBtn" class="cmd-btn" type="button">Redundant Activation</button>
+        </div>
+        <div class="command-status">
+          <h3>Command Execution Status</h3>
+          <p id="commandStatus">No command executed yet.</p>
+        </div>
+        <div class="manual-input">
+          <label for="packetInput">Paste telemetry packet for testing</label>
+          <textarea id="packetInput" rows="4" placeholder="CSV, JSON, or key=value packet"></textarea>
+          <button id="injectPacketBtn" class="btn btn-primary" type="button">Inject Packet</button>
+        </div>
+      </section>
+
+      <section class="panel telemetry-panel container-telemetry">
+        <div class="panel-title-row">
+          <div>
+            <h2>Container Telemetry</h2>
+            <p>Primary CanSat body data</p>
+          </div>
+        </div>
+        <div class="telemetry-table" id="containerTelemetry"></div>
+      </section>
+
+      <section class="panel telemetry-panel payload-telemetry">
+        <div class="panel-title-row">
+          <div>
+            <h2>Payload Telemetry</h2>
+            <p>Payload sensors and GPS data</p>
+          </div>
+        </div>
+        <div class="telemetry-table" id="payloadTelemetry"></div>
+      </section>
+
+      <section class="panel graphs-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Real-Time Graphs</h2>
+            <p>Altitude, pressure, temperature, descent rate, battery voltage</p>
+          </div>
+          <span class="small-badge" id="graphPointCount">0 points</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card"><canvas id="altitudeChart"></canvas></div>
+          <div class="chart-card"><canvas id="pressureChart"></canvas></div>
+          <div class="chart-card"><canvas id="temperatureChart"></canvas></div>
+          <div class="chart-card"><canvas id="descentChart"></canvas></div>
+          <div class="chart-card wide"><canvas id="batteryChart"></canvas></div>
+        </div>
+      </section>
+
+      <section class="panel map-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Tracking Map</h2>
+            <p>Live payload GPS coordinates and trajectory path</p>
+          </div>
+          <span class="small-badge" id="gpsBadge">GPS: Waiting</span>
+        </div>
+        <div id="map" class="map"></div>
+      </section>
+
+      <section class="panel orientation-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Orientation Visualization</h2>
+            <p>Roll, pitch, and yaw model</p>
+          </div>
+        </div>
+        <div class="orientation-wrap">
+          <div id="orientationScene" class="orientation-scene" aria-label="3D orientation model"></div>
+          <div class="attitude-readout">
+            <div><span>Roll</span><strong id="rollValue">--°</strong></div>
+            <div><span>Pitch</span><strong id="pitchValue">--°</strong></div>
+            <div><span>Yaw</span><strong id="yawValue">--°</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel video-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Live Video Streaming</h2>
+            <p>Camera selection and mission stream preview</p>
+          </div>
+        </div>
+        <div class="video-controls">
+          <select id="cameraSelect" aria-label="Camera selector"></select>
+          <button id="startVideoBtn" class="btn btn-primary" type="button">Start Camera</button>
+          <button id="stopVideoBtn" class="btn btn-danger" type="button" disabled>Stop Camera</button>
+        </div>
+        <video id="videoStream" playsinline muted autoplay></video>
+        <p id="videoStatus" class="stream-status">Camera stream is off.</p>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="panel-title-row">
+          <div>
+            <h2>Telemetry Log</h2>
+            <p>Latest mission events and received packets</p>
+          </div>
+          <button id="clearLogBtn" class="btn btn-warning" type="button">Clear Log</button>
+        </div>
+        <div class="log-window" id="logWindow" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
